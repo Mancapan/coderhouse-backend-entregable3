@@ -11,44 +11,70 @@ class ProductRepository {
   }
 
   getAll = async () => {
-    try {
-      return await this.model.find(); // metodos find de moongoose
-    } catch (error) {
-      throw new Error(error);
-    }
+    return await this.model.find();
   };
 
   getById = async (id) => {
-    try {
-      return await this.model.findById(id);
-    } catch (error) {
-      throw new Error(error);
-    }
+    return await this.model.findById(id);
   };
 
   create = async (body) => {
-    try {
-      return await this.model.create(body);
-    } catch (error) {
-      throw new Error(error);
-    }
+    return await this.model.create(body);
   };
 
   update = async (id, body) => {
-    try {
-      return await this.model.findByIdAndUpdate(id, body, { new: true });
-    } catch (error) {
-      throw new Error(error);
-    }
+    return await this.model.findByIdAndUpdate(id, body, {
+      returnDocument: true,
+    });
   };
 
   delete = async (id) => {
-    try {
-      return await this.model.findByIdAndDelete(id);
-    } catch (error) {
-      throw new Error(error);
-    }
+    return await this.model.findByIdAndDelete(id);
   };
-} // fin clase repository
+}
 
 export const productRepository = new ProductRepository(ProductModel);
+
+/*
+---------------------------------------------------------------------------
+Manejo de errores en el Repository
+---------------------------------------------------------------------------
+
+En el Repository NO se transforman los errores (NO usar new Error(error)).
+
+¿Por qué?
+
+- El repository es únicamente la capa de acceso a datos.
+- Su responsabilidad es ejecutar operaciones contra la base de datos.
+- No debe decidir cómo responder al cliente.
+- No debe modificar el tipo original del error (ej: CastError, ValidationError).
+
+Si hacemos:
+
+    throw new Error(error);
+
+Estamos perdiendo:
+- El tipo real del error (CastError, ValidationError, etc.)
+- Información útil para el middleware global ./middlewares/error-handler.js
+- La posibilidad de manejar errores específicos correctamente
+
+Por eso, si se usa try-catch aquí, solo se re-lanza el error original:
+
+    throw error;
+
+De esta forma:
+
+1) El error natural de Mongoose se conserva.
+2) El Controller puede decidir si convertirlo en CustomError.
+3) El errorHandler global puede interceptarlo y formatear la respuesta HTTP.
+
+Arquitectura aplicada:
+
+Repository  →  Controller  →  Middleware (errorHandler)
+     ↑              ↑
+  Solo datos     Lógica y validación
+
+El manejo final de errores HTTP se centraliza en el middleware global,
+no en el repository.
+---------------------------------------------------------------------------
+*/
