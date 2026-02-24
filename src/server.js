@@ -1,6 +1,7 @@
 import express from "express";
 import { initMongoDB } from "./config/db-connection.js";
 import errorHandler from "./middlewares/error-handler.js";
+import cartRouter from "./routes/cart-router.js";
 import productRouter from "./routes/product-router.js";
 
 const app = express();
@@ -20,6 +21,7 @@ app.get("/prueba", (req, res) => {
 });
 
 app.use("/api/products", productRouter);
+app.use("/api/carts", cartRouter);
 
 //Manejo ruta inexistente
 app.use((req, res, next) => {

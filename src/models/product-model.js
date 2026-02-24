@@ -9,19 +9,9 @@ const ProductSchema = new Schema(
     status: { type: Boolean, default: true },
     stock: { type: Number, required: true, min: 0 },
     category: { type: String, required: true },
-    thumbnails: {
-      type: [String],
-      default: []
-    }
+    thumbnails: { type: [String], default: [] },
   },
-  {
-    timestamps: true,
-    versionKey: false
-  }
+  { timestamps: true, versionKey: false }
 );
 
-export const ProductModel = model(
-  "Product",       // Modelo
-  ProductSchema,
-  "productos"      // Colección real en Mongo
-);
+export const ProductModel = model("Product", ProductSchema, "productos");
