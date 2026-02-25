@@ -1,7 +1,7 @@
 /*
 Controller = consume el repositorio cons sus metodos, genera errores y validaciones
 */
- 
+
 import { productRepository } from "../repositories/product-repository.js";
 import { CustomError } from "../utils/custom-error.js";
 
@@ -13,7 +13,10 @@ class ProductController {
   // GET /api/products
   getAll = async (req, res, next) => {
     try {
-      const response = await this.repository.getAll();
+
+
+      const {page,limit} = req.query;
+      const response = await this.repository.getAll(page,limit); // paginación
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -25,12 +28,26 @@ class ProductController {
     try {
       const { id } = req.params;
       const response = await this.repository.getById(id);
-          if (!response) throw new CustomError("Product NOT found",404);
+      if (!response) throw new CustomError("Product NOT found", 404);
       res.status(200).json(response);
     } catch (error) {
       next(error);
     }
   };
+
+  // GET /api/products/:title
+  getByName = async (req, res, next) => {
+    try {
+      const { title } = req.params;
+
+      const response = await this.repository.getByName(title);
+
+      if (!response) throw new CustomError("Product NOT found", 404);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }; // fin getBYname
 
   // POST /api/products
   create = async (req, res, next) => {
@@ -47,7 +64,7 @@ class ProductController {
     try {
       const { id } = req.params;
       const response = await this.repository.update(id, req.body);
-        if (!response) throw new CustomError("Product NOT found",404);
+      if (!response) throw new CustomError("Product NOT found", 404);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -59,7 +76,7 @@ class ProductController {
     try {
       const { id } = req.params;
       const response = await this.repository.delete(id);
-      if (!response) throw new CustomError("Product NOT found",404);
+      if (!response) throw new CustomError("Product NOT found", 404);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -68,7 +85,6 @@ class ProductController {
 }
 
 export const productController = new ProductController(productRepository);
-
 
 /*
 ----------------------------------------------------------------------------

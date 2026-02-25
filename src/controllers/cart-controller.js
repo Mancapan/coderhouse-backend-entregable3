@@ -25,7 +25,6 @@ class CartController {
     try {
       const { cid } = req.params;
       const response = await this.repository.getById(cid);
-
       if (!response) throw new CustomError("Cart NOT found", 404);
 
       res.status(200).json(response);
@@ -48,7 +47,6 @@ class CartController {
   addProduct = async (req, res, next) => {
     try {
       const { cid, pid } = req.params;
-
       const { quantity } = req.body;
       const qty = quantity ?? 1;
 
@@ -57,7 +55,6 @@ class CartController {
       }
 
       const response = await this.repository.addProduct(cid, pid, Number(qty));
-
       if (!response) throw new CustomError("Cart NOT found", 404);
 
       res.status(200).json(response);
@@ -70,11 +67,8 @@ class CartController {
   removeProduct = async (req, res, next) => {
     try {
       const { cid, pid } = req.params;
-
       const response = await this.repository.removeProduct(cid, pid);
-
       if (!response) throw new CustomError("Cart NOT found", 404);
-
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -85,11 +79,8 @@ class CartController {
   clearCart = async (req, res, next) => {
     try {
       const { cid } = req.params;
-
       const response = await this.repository.clearCart(cid);
-
       if (!response) throw new CustomError("Cart NOT found", 404);
-
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -100,11 +91,8 @@ class CartController {
   delete = async (req, res, next) => {
     try {
       const { cid } = req.params;
-
       const response = await this.repository.delete(cid);
-
       if (!response) throw new CustomError("Cart NOT found", 404);
-
       res.status(200).json(response);
     } catch (error) {
       next(error);

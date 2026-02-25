@@ -10,12 +10,16 @@ class ProductRepository {
     this.model = model;
   }
 
-  getAll = async () => {
-    return await this.model.find();
+  getAll = async (page = 1, limit=10) => {
+    return await this.model.paginate({},{page,limit});
   };
 
   getById = async (id) => {
     return await this.model.findById(id);
+  };
+
+  getByName = async (title) => {
+    return await this.model.findOne({ title }).explain();
   };
 
   create = async (body) => {

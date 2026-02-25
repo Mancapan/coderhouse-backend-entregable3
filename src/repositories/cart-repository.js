@@ -12,7 +12,7 @@ class CartRepository {
 
   // GET /api/carts
   getAll = async () => {
-    return await this.model.find().populate("products.product");
+    return await this.model.find().populate("products.product",{_id:0}); // nombre de la propioedad, no mostramos
   };
 
   // GET /api/carts/:cid
@@ -68,6 +68,6 @@ class CartRepository {
   delete = async (cid) => {
     return await this.model.findByIdAndDelete(cid);
   };
-}
+}// fin cartRepositiry
 
 export const cartRepository = new CartRepository(CartModel);
