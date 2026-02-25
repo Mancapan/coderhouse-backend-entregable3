@@ -6,8 +6,7 @@ const CartSchema = new Schema(
       {
         product: {
           type: Schema.Types.ObjectId,
-          ref: "Product", // <-- nombre del MODELO, NO el de la colección
-          required: true,
+          ref: "Product", // nombre de la colección
         },
         quantity: {
           type: Number,
@@ -20,5 +19,6 @@ const CartSchema = new Schema(
   },
   { timestamps: true, versionKey: false }
 );
+
 
 export const CartModel = model("Cart", CartSchema, "carts");

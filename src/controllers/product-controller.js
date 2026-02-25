@@ -10,18 +10,35 @@ class ProductController {
     this.repository = repository;
   }
 
-  // GET /api/products
   getAll = async (req, res, next) => {
     try {
+      const { page = 1, limit = 10, sort, query } = req.query;
+      const response = await this.repository.getAll(page, limit, sort, query);
 
+      // armar query string base para los links ej: http://localhost:8080/api/products?limit=2&page=3
+      const baseUrl = `${req.protocol}://${req.get("host")}${req.path}`;
+      const queryStr = `limit=${limit}${sort ? `&sort=${sort}` : ""}${query ? `&query=${query}` : ""}`;
 
-      const {page,limit} = req.query;
-      const response = await this.repository.getAll(page,limit); // paginación
-      res.status(200).json(response);
+      res.status(200).json({
+        status: "success",
+        payload: response.docs,
+        totalPages: response.totalPages,
+        prevPage: response.prevPage,
+        nextPage: response.nextPage,
+        page: response.page,
+        hasPrevPage: response.hasPrevPage,
+        hasNextPage: response.hasNextPage,
+        prevLink: response.hasPrevPage
+          ? `${baseUrl}api/products?${queryStr}&page=${response.prevPage}`
+          : null,
+        nextLink: response.hasNextPage
+          ? `${baseUrl}api/products?${queryStr}&page=${response.nextPage}`
+          : null,
+      });
     } catch (error) {
       next(error);
     }
-  };
+  }; // fin getall
 
   // GET /api/products/:id
   getById = async (req, res, next) => {
@@ -85,40 +102,3 @@ class ProductController {
 }
 
 export const productController = new ProductController(productRepository);
-
-/*
-----------------------------------------------------------------------------
-¿Qué es next en Express?
-
-"next" es una función que permite pasar el control al siguiente middleware
-en la cadena de ejecución.
-
-Cuando usamos:
-
-    next(error);
-
-Estamos enviando el error al middleware global de manejo de errores
-(errorHandler).
-
-Flujo de ejecución:
-
-Request → Controller → next(error) → errorHandler → Response JSON
-
-¿Por qué usamos next(error) y no res.status() aquí?
-
-Porque seguimos el principio de responsabilidad única:
-
-- El Controller decide cuándo hay un error.
-- El errorHandler decide cómo responder al cliente.
-- El Repository solo accede a datos.
-
-Esto permite:
-✔ Centralizar el manejo de errores.
-✔ Mantener respuestas HTTP consistentes.
-✔ Evitar repetir lógica en cada método.
-✔ Mantener arquitectura limpia.
-
-Sin next(error), Express no enviaría el error correctamente
-al middleware global.
-----------------------------------------------------------------------------
-*/

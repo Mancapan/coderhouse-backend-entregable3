@@ -63,6 +63,38 @@ class CartController {
     }
   };
 
+// PUT /api/carts/:cid
+updateProducts = async (req, res, next) => {
+  try {
+    const { cid } = req.params;
+    const products = req.body; // arreglo de productos
+    const response = await this.repository.updateProducts(cid, products);
+    if (!response) throw new CustomError("Cart NOT found", 404);
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT /api/carts/:cid/products/:pid
+updateProductQuantity = async (req, res, next) => {
+  try {
+    const { cid, pid } = req.params;
+    const { quantity } = req.body;
+
+    if (!quantity || Number(quantity) < 1) {
+      throw new CustomError("Quantity must be a number >= 1", 400);
+    }
+
+    const response = await this.repository.updateProductQuantity(cid, pid, Number(quantity));
+    if (!response) throw new CustomError("Cart or Product NOT found", 404);
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
   // DELETE /api/carts/:cid/products/:pid
   removeProduct = async (req, res, next) => {
     try {

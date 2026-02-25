@@ -12,11 +12,10 @@ const PORT = 8080;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 app.use("/api/products", productRouter);
 app.use("/api/carts", cartRouter);
 
-//Manejo ruta inexistente, mensaje de Rut not found en postman
+//Manejo en caso de una ruta inexistente, mensaje de Rout not found en postman
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
@@ -26,7 +25,6 @@ app.use((req, res, next) => {
 
 // Middleware global de errores 
 app.use(errorHandler);
-
 
 // Init DB + levantar servidor
 initMongoDB()

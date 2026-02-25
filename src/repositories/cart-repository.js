@@ -12,7 +12,7 @@ class CartRepository {
 
   // GET /api/carts
   getAll = async () => {
-    return await this.model.find().populate("products.product",{_id:0}); // nombre de la propioedad, no mostramos
+    return await this.model.find().populate("products.product"); 
   };
 
   // GET /api/carts/:cid
@@ -37,6 +37,20 @@ class CartRepository {
     await cart.save();
     return await cart.populate("products.product");
   };
+
+// PUT /api/carts/:cid/products/:pid
+updateProductQuantity = async (cid, pid, quantity) => {
+  const cart = await this.model.findById(cid);
+  if (!cart) return null;
+
+  const product = cart.products.find((p) => p.product.toString() === pid);
+  if (!product) return null;
+  product.quantity = quantity;
+  await cart.save();
+  return await cart.populate("products.product");
+};
+
+
 
   // DELETE /api/carts/:cid/products/:pid
   removeProduct = async (cid, pid) => {
@@ -63,6 +77,14 @@ class CartRepository {
 
     return await updated.populate("products.product");
   };
+
+
+// PUT /api/carts/:cid
+updateProducts = async (cid, products) => {
+  const updated = await this.model.findByIdAndUpdate(cid,{ products },{ new: true });
+  if (!updated) return null;
+  return await updated.populate("products.product");
+};
 
   // DELETE /api/carts/:cid/delete (borrar carrito)
   delete = async (cid) => {
