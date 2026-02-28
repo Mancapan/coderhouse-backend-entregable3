@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 // Middleware global de errores 
 app.use(errorHandler);
 
-// Init DB + levantar servidor
+// Init mongoDB + levantar servidor
 initMongoDB()
   .then(() => {
     console.log("Conectado a MongoDB");

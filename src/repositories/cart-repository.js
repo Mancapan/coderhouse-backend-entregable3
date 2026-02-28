@@ -50,8 +50,6 @@ updateProductQuantity = async (cid, pid, quantity) => {
   return await cart.populate("products.product");
 };
 
-
-
   // DELETE /api/carts/:cid/products/:pid
   removeProduct = async (cid, pid) => {
     const updated = await this.model.findByIdAndUpdate(
@@ -77,7 +75,6 @@ updateProductQuantity = async (cid, pid, quantity) => {
 
     return await updated.populate("products.product");
   };
-
 
 // PUT /api/carts/:cid
 updateProducts = async (cid, products) => {
